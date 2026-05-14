@@ -14,4 +14,3 @@ Promotion rule: move a folder out of this ledger only after the course text name
 | `PDP-30-applied-studio-16-customized-supplemental-3` | legacy-or-archive | Legacy/archive material. Preserve for reference; do not link as active coursework without explicit migration. |
 | `PDP-31-applied-studio-17-data-science-in-python-supplemental-2` | inactive-source-candidate | Inactive/promotable source. Do not link until the course text, starter/solution role, and verification expectation are added. |
 | `PDP-32-applied-studio-17-data-science-in-python-supplemental-3` | inactive-source-candidate | Inactive/promotable source. Do not link until the course text, starter/solution role, and verification expectation are added. |
-| `PDP-Customized-Archive` | legacy-or-archive | Legacy/archive material. Preserve for reference; do not link as active coursework without explicit migration. |
