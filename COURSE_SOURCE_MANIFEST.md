@@ -16,8 +16,8 @@ Canonical source repository: `Pythonic-Design-Patterns`
 
 | Folder |
 | --- |
-| `PDP-01-pdp1-why-python-changes-the-design-patterns-conv` |
-| `PDP-02-pdp1-why-python-changes-the-design-patterns-conv` |
+| `PDP-01-pdp1-why-python-changes-the-design-patterns-conversation-supplemental-2` |
+| `PDP-02-pdp1-why-python-changes-the-design-patterns-conversation-supplemental-3` |
 | `PDP-03-pdp2-design-foundations-in-python-supplemental-2` |
 | `PDP-04-pdp2-design-foundations-in-python-supplemental-3` |
 | `PDP-05-pdp3-strategy-without-ceremony-supplemental-2` |
@@ -32,8 +32,8 @@ Canonical source repository: `Pythonic-Design-Patterns`
 | `PDP-14-pdp7-state-and-command-supplemental-3` |
 | `PDP-15-pdp8-adapter-and-integration-boundaries-supplemental-2` |
 | `PDP-16-pdp8-adapter-and-integration-boundaries-supplemental-3` |
-| `PDP-17-pdp9-template-method-versus-higher-order-functio` |
-| `PDP-18-pdp9-template-method-versus-higher-order-functio` |
+| `PDP-17-pdp9-template-method-versus-higher-order-functions-supplemental-2` |
+| `PDP-18-pdp9-template-method-versus-higher-order-functions-supplemental-3` |
 | `PDP-19-pdp10-singleton-global-state-and-module-patterns` |
 | `PDP-20-pdp10-singleton-global-state-and-module-patterns` |
 | `PDP-21-pdp11-refactoring-python-code-smells-supplemental-2` |
