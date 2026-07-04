@@ -29,7 +29,7 @@ class OrderEvent:
 	customer_email: str
 
 
-Listener = Callable[[OrderEvent], None]
+listener = Callable[[OrderEvent], None]
 
 
 # Manage subscriptions and event publication
@@ -38,10 +38,10 @@ class EventBus:
 
 	def __init__(self) -> None:
 		"""Initialize an empty listener registry"""
-		self._listeners: dict[str, dict[int, Listener]] = defaultdict(dict)
+		self._listeners: dict[str, dict[int, listener]] = defaultdict(dict)
 		self._next_token = INITIAL_LISTENER_TOKEN
 
-	def subscribe(self, event_name: str, listener: Listener) -> int:
+	def subscribe(self, event_name: str, listener: listener) -> int:
 		"""Subscribe a listener and return its token"""
 		token = self._next_token
 		self._next_token += 1
