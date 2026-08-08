@@ -146,7 +146,9 @@ class MoveCommand:
             EXPLORING_STATE_NAME: ExploringState(),
             BOSS_STATE_NAME: BossState(),
         }
-        context.transition(states[self.previous_state_name], self.previous_location)
+        context.transition(
+            states[self.previous_state_name], self.previous_location
+        )
 
 
 # Restore energy while supporting undo

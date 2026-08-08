@@ -89,7 +89,9 @@ class ProfileService:
 class AuthorizationProxy:
     """Authorize users before profile data is loaded"""
 
-    def __init__(self, service: ProfileService, allowed_users: set[str]) -> None:
+    def __init__(
+        self, service: ProfileService, allowed_users: set[str]
+    ) -> None:
         """Store the wrapped service and allowed usernames"""
         self.service = service
         self.allowed_users = allowed_users
