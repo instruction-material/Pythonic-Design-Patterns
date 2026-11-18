@@ -10,7 +10,7 @@ Report(title, sections, include_footer, tag) owns a copy of its input section li
 
 make_exporter accepts exactly markdown or text and returns a callable report-to-string exporter in both roles. Unknown string formats raise ValueError; non-string formats raise TypeError. Titles, sections and supplied tags must contain a non-space character; exact text is retained. The footer flag is a boolean. Exporters revalidate mutable report state and preserve the order of sections without mutation.
 
-Core: replace function exporters with callable exporter objects while preserving every output and boundary. Explain why a named constructor/helper is enough for a small configuration and why the larger staged build benefits from a builder. Optional Config Kit: build two report variants from one builder, modify a returned report and prove independent snapshots; add and document one deliberately separate output feature after the core refactor is green.
+Core: replace function exporters with callable exporter objects while preserving every output and boundary. Explain why a named constructor/helper is enough for a small configuration and why the larger staged build benefits from a builder. Optional Config Kit: build two report variants from one builder, modify a returned report and prove independent snapshots; render the earlier snapshot as plain Markdown and the later tagged/footer snapshot as text. Preserve the existing API and record both expected outputs.
 
 ## Run and check
 
