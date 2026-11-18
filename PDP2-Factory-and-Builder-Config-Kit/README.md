@@ -1,8 +1,7 @@
-# PDP2 Factory and Builder Config Kit
+# Factory and Builder Config Kit
 
-Goal: use a factory to choose output behavior and a lightweight builder only
-where report construction becomes noisy.
+A working report-construction and exporter baseline.
 
-Students should compare direct constructor calls, named constructors, and a
-small builder so they can explain when extra creation structure helps and when
-it is just hiding a simple object behind ceremony.
+[Complete learner brief](starter/README.md) and [reference contract](solution/README.md).
+
+Both roles are complete runnable baselines. The assignment is a behavior-preserving refactor, followed by separately specified optional work.

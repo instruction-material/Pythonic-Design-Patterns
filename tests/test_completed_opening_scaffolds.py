@@ -10,6 +10,10 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = [
+    ('PDP-05-pdp3-strategy-without-ceremony-supplemental-2', {'make_bonus_rule', 'run_rule'}),
+    ('PDP-06-pdp3-strategy-without-ceremony-supplemental-3', {'register_score_rule', 'choose_best'}),
+    ('PDP-07-pdp4-factory-and-builder-in-python-supplemental-2', {'render_text', 'add_section'}),
+    ('PDP-08-pdp4-factory-and-builder-in-python-supplemental-3', {'load_provider', 'select_provider'}),
     ("PDP-03-pdp2-design-foundations-in-python-supplemental-2",
      {"render_notice", "deliver_notice"}),
     ("PDP-04-pdp2-design-foundations-in-python-supplemental-3",

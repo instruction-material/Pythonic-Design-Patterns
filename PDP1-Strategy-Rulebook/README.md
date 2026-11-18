@@ -1,8 +1,7 @@
-# PDP1 Strategy Rulebook
+# Strategy Rulebook
 
-Goal: compare plain functions, configured callables, and small strategy
-registries for a pricing-rule problem.
+A working pricing baseline for a behavior-preserving Strategy refactor.
 
-Students should learn that Python often expresses Strategy cleanly with
-functions first, then grows into callable objects only when configuration or
-state makes that extra structure worthwhile.
+[Complete learner brief](starter/README.md) and [reference contract](solution/README.md).
+
+Both roles are complete runnable baselines. The assignment is a behavior-preserving refactor, followed by separately specified optional work.

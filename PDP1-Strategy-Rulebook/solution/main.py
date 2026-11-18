@@ -1,132 +1,130 @@
+"""A small finite-float pricing model with interchangeable strategies."""
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
-from typing import Iterable, Protocol
+from math import isfinite
 
-#################
-#   CONSTANTS   #
-#################
-
-DEFAULT_QUANTITY = 1
-FULL_PRICE_RATE = 1.0
-LOYALTY_PERCENT_OFF = 0.1
-BULK_MINIMUM_QUANTITY = 6
-BULK_DISCOUNT_AMOUNT = 8.0
-CHECKOUT_DECIMAL_PLACES = 2
-NOTEBOOK_PRICE = 5.0
-NOTEBOOK_QUANTITY = 2
-PEN_SET_PRICE = 3.5
-PEN_SET_QUANTITY = 1
-PUZZLE_PRICE = 12.0
-PUZZLE_QUANTITY = 3
+PricingRule = Callable[[list["LineItem"]], float]
 
 
-#############
-#   TYPES   #
-#############
+def require_amount(value: float) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise TypeError("amount must be a number")
+    if not isfinite(value) or value < 0:
+        raise ValueError("amount must be finite and nonnegative")
+    return float(value)
 
 
-# Store one item in the checkout cart
 @dataclass(frozen=True)
 class LineItem:
-    """Store the product, price, and quantity for one cart line"""
-
     name: str
     price: float
-    quantity: int = DEFAULT_QUANTITY
+    quantity: int = 1
 
-
-# Define the callable interface for pricing strategies
-class PricingStrategy(Protocol):
-    """Define the pricing strategy interface"""
-
-    def __call__(self, items: list[LineItem]) -> float:
-        """Calculate the total for the provided items"""
-        ...
-
-
-# Apply a percentage discount to the whole cart
-class LoyaltyDiscount:
-    """Calculate a loyalty discount for repeat customers"""
-
-    def __init__(self, percent_off: float) -> None:
-        """Store the discount percentage"""
-        self.percent_off = percent_off
-
-    def __call__(self, items: list[LineItem]) -> float:
-        """Calculate the discounted cart total"""
-        return subtotal(items) * (FULL_PRICE_RATE - self.percent_off)
-
-
-# Apply a fixed discount when the cart has enough items
-class BulkBasketDiscount:
-    """Calculate a fixed discount for larger baskets"""
-
-    def __init__(self, minimum_quantity: int, discount_amount: float) -> None:
-        """Store the quantity threshold and discount amount"""
-        self.minimum_quantity = minimum_quantity
-        self.discount_amount = discount_amount
-
-    def __call__(self, items: list[LineItem]) -> float:
-        """Calculate the bulk-discounted cart total"""
-        total = subtotal(items)
-        quantity = sum(item.quantity for item in items)
-
-        # Apply the fixed discount only when the basket is large enough
-        if quantity >= self.minimum_quantity:
-            total -= self.discount_amount
-
-        return total
-
-
-#################
-#   FUNCTIONS   #
-#################
+    def __post_init__(self) -> None:
+        if not isinstance(self.name, str):
+            raise TypeError("name must be a string")
+        if not self.name.strip():
+            raise ValueError("name must contain a non-space character")
+        require_amount(self.price)
+        if not isinstance(self.quantity, int) or isinstance(self.quantity, bool):
+            raise TypeError("quantity must be an integer")
+        if self.quantity < 0:
+            raise ValueError("quantity must be nonnegative")
 
 
 def subtotal(items: Iterable[LineItem]) -> float:
-    """Calculate the undiscounted cart subtotal"""
-    return sum(item.price * item.quantity for item in items)
+    total = 0.0
+    for item in items:
+        if not isinstance(item, LineItem):
+            raise TypeError("cart entries must be LineItem values")
+        total += item.price * item.quantity
+    return require_amount(total)
 
 
 def standard_total(items: list[LineItem]) -> float:
-    """Calculate the standard cart total without a discount"""
     return subtotal(items)
 
 
-def build_rulebook() -> dict[str, PricingStrategy]:
-    """Build the available pricing strategy lookup"""
-    return {
-        "standard": standard_total,
-        "loyalty": LoyaltyDiscount(LOYALTY_PERCENT_OFF),
-        "bulk": BulkBasketDiscount(BULK_MINIMUM_QUANTITY, BULK_DISCOUNT_AMOUNT),
-    }
+def loyalty_total(items: list[LineItem]) -> float:
+    return subtotal(items) * 0.9
 
 
-def checkout_total(
-    items: list[LineItem],
-    rule_name: str,
-    rulebook: dict[str, PricingStrategy],
-) -> float:
-    """Calculate a rounded checkout total using the selected strategy"""
-    return round(rulebook[rule_name](items), CHECKOUT_DECIMAL_PLACES)
+def bulk_total(items: list[LineItem]) -> float:
+    total = subtotal(items)
+    return max(0.0, total - 8.0) if sum(i.quantity for i in items) >= 6 else total
+
+
+def register_rule(rules: dict[str, PricingRule], name: str, rule: PricingRule) -> None:
+    if not isinstance(name, str):
+        raise TypeError("name must be a string")
+    if not name.strip():
+        raise ValueError("name must contain a non-space character")
+    if not callable(rule):
+        raise TypeError("rule must be callable")
+    if name in rules:
+        raise ValueError("duplicate rule")
+    rules[name] = rule
+
+
+@dataclass(frozen=True)
+class LoyaltyDiscount:
+    percent_off: float
+
+    def __post_init__(self) -> None:
+        if require_amount(self.percent_off) > 1:
+            raise ValueError("discount fraction must be at most one")
+
+    def __call__(self, items: list[LineItem]) -> float:
+        return subtotal(items) * (1 - self.percent_off)
+
+
+@dataclass(frozen=True)
+class BulkBasketDiscount:
+    minimum_quantity: int
+    discount_amount: float
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.minimum_quantity, int) or isinstance(self.minimum_quantity, bool):
+            raise TypeError("minimum quantity must be an integer")
+        if self.minimum_quantity < 1:
+            raise ValueError("minimum quantity must be positive")
+        require_amount(self.discount_amount)
+
+    def __call__(self, items: list[LineItem]) -> float:
+        total = subtotal(items)
+        return max(0.0, total - self.discount_amount) if sum(i.quantity for i in items) >= self.minimum_quantity else total
+
+
+def build_rulebook() -> dict[str, PricingRule]:
+    return {"standard": standard_total, "loyalty": LoyaltyDiscount(0.1),
+            "bulk": BulkBasketDiscount(6, 8.0)}
+
+
+RULES = build_rulebook()
+
+
+def checkout_total(items: list[LineItem], rule_name: str,
+                   rulebook: Mapping[str, PricingRule] | None = None) -> float:
+    """Preserve the caller's list, call once, then round the final valid amount."""
+    if not isinstance(rule_name, str):
+        raise TypeError("rule name must be a string")
+    cart = list(items)
+    subtotal(cart)
+    rule = (RULES if rulebook is None else rulebook)[rule_name]
+    if not callable(rule):
+        raise TypeError("rule must be callable")
+    return round(require_amount(rule(cart)), 2)
 
 
 def build_sample_cart() -> list[LineItem]:
-    """Build the sample cart used by the lesson"""
-    return [
-        LineItem("notebook", NOTEBOOK_PRICE, NOTEBOOK_QUANTITY),
-        LineItem("pen set", PEN_SET_PRICE, PEN_SET_QUANTITY),
-        LineItem("puzzle", PUZZLE_PRICE, PUZZLE_QUANTITY),
-    ]
+    return [LineItem("notebook", 5.0, 2), LineItem("pen set", 3.5),
+            LineItem("puzzle", 12.0, 3)]
 
 
 def main() -> None:
-    """Print totals for every strategy in the rulebook"""
     cart = build_sample_cart()
-    rulebook = build_rulebook()
-
-    # Print each rule result in rulebook order
-    for rule_name in rulebook:
-        print(f"{rule_name}: ${checkout_total(cart, rule_name, rulebook):.2f}")
+    for name in RULES:
+        print(f"{name}: ${checkout_total(cart, name):.2f}")
 
 
 if __name__ == "__main__":

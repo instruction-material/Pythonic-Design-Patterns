@@ -8,6 +8,6 @@ Promotion rule: restore a folder from `_archived-unlinked/` only after the live 
 
 ## Current semantic review
 
-The active-source review found 24 identically implemented title-formatting pairs under different pattern topics. PDP-01/PDP-02 are repaired as callable comparison and named-registry exercises; PDP-03/PDP-04 are repaired as composed delivery and owned mutable-record exercises. Their contracts are independently checked. The remaining 20 generated pairs and seven larger pattern projects remain in scope. This content/correctness work is separate from the inactive-folder inventory.
+Ten candidate families now have matching role briefs and native contracts: PDP-01 through PDP-08, Strategy Rulebook and Factory/Builder Config Kit. The four former formatting duplicates PDP-05 through PDP-08 now teach configured scores, deterministic strategy comparison, immutable construction and provider loading.
 
-Opening/foundations site teaching, learner/reference import consent, save/export and current-package recovery are tracked by the site course audit. The parent course remains open until full teaching, code and workflow criteria are reconciled.
+Sixteen generated duplicates and five larger packs remain in scope. The two large refactoring starters intentionally remain complete working baselines. Site teaching and actual learner/instructor import, persistence and export qualification remain separate from native acceptance. The full course audit remains open.

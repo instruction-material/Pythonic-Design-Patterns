@@ -10,7 +10,7 @@ Canonical source repository: `Pythonic-Design-Patterns`
 
 - Run `./verify-course-source.sh` from this repository root before treating the source pack as ready.
 - The verification gate checks for this manifest, the source backlog ledger, source-like files, removed Replit metadata, and any repo-specific readiness files.
-- Repaired PDP-01/PDP-02 folders contain learner contract tests. The repository gate verifies their reference behavior, completed learner fixtures and strict typing. Remaining source families still require their recorded course audit.
+- The ten named qualified families contain role-local contract tests. The repository gate verifies their reference behavior, completed learner fixtures and strict typing. Remaining source families still require their recorded course audit.
 
 ## Active Catalog Targets
 
@@ -51,15 +51,13 @@ Canonical source repository: `Pythonic-Design-Patterns`
 ## Source Inventory
 
 - 31 active linked project folders remain addressable.
-- `tests/` holds maintainer checks for the repaired opening families.
+- `tests/` holds maintainer checks for the ten named candidate families.
 - `requirements-dev.txt` pins the checker and transitive tools; project runtime code uses the standard library.
 - Inactive source history remains in `_archived-unlinked/`.
 - The verifier reports current source-file counts as an inventory check.
 
 ## Current qualification scope
 
-PDP-01 and PDP-02 are distinct callable-design exercises with complete in-folder contracts. Twenty-two former formatter duplicates and seven larger pattern projects remain under review. This manifest preserves their links and records partial course acceptance.
+The ten-family candidate qualifies PDP-01 through PDP-08, Strategy Rulebook and Factory/Builder Config Kit. Each imported role has a full brief, program, contract suite and pinned development requirements. Eight families have declared learner holes and matching completed-scaffold checks. Two larger families preserve working refactoring baselines.
 
-## Foundations contract qualification
-
-PDP-03 and PDP-04 now contain defined composition/protocol and mutable-record/snapshot contracts. Each role has main.py, README.md, five learner tests and pinned development requirements. The verification gate qualifies PDP-01 through PDP-04, including positive/negative static consumers and completed scaffold fixtures. Twenty duplicate generated pairs and seven larger source families remain in whole-course scope. Site teaching and actual IDE acceptance remain separate until their matching evidence is recorded.
+The root gate passes 24 maintainer tests,54 reference contract cases,14 working-baseline cases,40 completed-scaffold cases and fresh strict checks of20 main.py programs. Sixteen duplicate generated pairs and five larger packs remain under review. Site teaching and actual IDE acceptance remain separate until their matching evidence is recorded.

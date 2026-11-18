@@ -1,30 +1,29 @@
 # Pythonic Design Patterns
 
-Course-owned learner and reference files for Python-specific design judgment and refactoring.
+Course-owned learner/reference files for Python-specific design judgment and refactoring.
 
-The two opening callable labs and two foundations labs have complete in-folder briefs, learner contract tests, unfinished scaffolds and runnable references:
+Ten source families have complete role briefs, contracts and native checking:
+- PDP-01/PDP-02: callable comparison and named formatter registry.
+- PDP-03/PDP-04: composed notice delivery and owned records/snapshots.
+- PDP-05/PDP-06: configured score callables and deterministic strategy comparison.
+- PDP-07/PDP-08: immutable report construction and provider loading boundaries.
+- Strategy Rulebook and Factory/Builder Config Kit: working baselines for behavior-preserving refactors, with separately defined optional work.
 
-- PDP-01: function, configured closure and callable-object comparison.
-- PDP-02: named callable registry and explicit boundary errors.
-- PDP-03: validated notice values, structural sender contracts and composed delivery.
-- PDP-04: owned mutable data-class state and independent snapshots.
+Each imported role contains README.md, main.py, test_contract.py and requirements-dev.txt. Small scaffolds declare named unfinished bodies; the two larger refactoring starters already run and pass their public contracts. Preserve the appropriate role.
 
-Each imported starter includes its own README, main.py, test_contract.py and requirements-dev.txt. Complete the named bodies, run the local contract tests, then compare the reference. The programs use the standard library; pinned development requirements provide static type checking.
+## Native setup
 
-## Native setup and verification
-
-Use CPython 3.14. From this repository root on macOS/Linux:
-
-```sh
+Use CPython 3.14. On macOS/Linux:
+~~~sh
 python3.14 -m venv .venv
 .venv/bin/python -m pip install -r requirements-dev.txt
 COURSE_PYTHON=.venv/bin/python ./verify-course-source.sh
-```
+~~~
 
-On Windows, create the environment with `py -3.14 -m venv .venv` and use `.venv\Scripts\python.exe` for the Python commands. Run unit tests with `-B -m unittest discover -s tests -v` and type-check each qualified main.py with `-m mypy --strict --no-incremental --python-version 3.14`.
+On Windows, create the environment with py -3.14 -m venv .venv and use .venv\Scripts\python.exe for Python commands. Run the repository unittest suite and fresh strict checks for the same twenty qualified main.py files.
 
-The repository gate verifies source inventory plus the repaired four-family opening/foundations scope: eighteen maintainer tests, four completed learner fixtures and fresh strict type checks of eight starter/reference programs. Positive and negative separate protocol consumers verify the static boundary. In-folder five-test contracts are learner checks; repository tests also check pristine scaffolds and are maintainer checks.
+The native gate passes 24 maintainer tests, 54 reference contract cases, 14 working-baseline cases, 40 completed-scaffold cases and fresh strict checks of 20 programs. The maintained positive/negative protocol probes use isolated caches and fresh checking.
 
 ## Remaining review
 
-Twenty generated formatter pairs and seven larger pattern projects remain in the course audit. A passing gate establishes the four qualified families. SOURCE_BACKLOG.md tracks the other sources and whole-course work.
+Sixteen duplicate generated pairs and five larger pattern packs remain under review. The active catalog retains 31 source families. Site teaching, actual IDE workflows and full-course acceptance have separate evidence; the native gate accepts the ten named families only.
