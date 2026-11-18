@@ -28,6 +28,6 @@ Primary reference: [Python callable protocols](https://docs.python.org/3.14/libr
 
 ## Native type check
 
-Create a CPython 3.14 environment with `python3.14 -m venv .venv`. On macOS/Linux, install the pinned checker with `.venv/bin/python -m pip install -r requirements-dev.txt`, then run `.venv/bin/python -m mypy --strict --python-version 3.14 main.py`. On Windows, use `py -3.14` to create the environment and `.venv\Scripts\python.exe` for later commands.
+Create a CPython 3.14 environment with `python3.14 -m venv .venv`. On macOS/Linux, install the pinned checker with `.venv/bin/python -m pip install -r requirements-dev.txt`, then run `.venv/bin/python -m mypy --strict --no-incremental --python-version 3.14 main.py`. On Windows, use `py -3.14` to create the environment and `.venv\Scripts\python.exe` for later commands.
 
 Run the same contract tests with the environment's Python. After completing the required bodies, record a passing contract run and type check as the baseline before comparing structures. Python annotations describe the contract; supplied runtime validation enforces the declared string boundaries.

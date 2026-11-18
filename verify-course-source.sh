@@ -31,10 +31,10 @@ source_count="$(find . \
 course_python="${COURSE_PYTHON:-python3}"
 "$course_python" -B -m unittest discover -s tests -v
 
-for opening in PDP-01-pdp1-why-python-changes-the-design-patterns-conversation-supplemental-2 PDP-02-pdp1-why-python-changes-the-design-patterns-conversation-supplemental-3; do
+for opening in PDP-01-pdp1-why-python-changes-the-design-patterns-conversation-supplemental-2 PDP-02-pdp1-why-python-changes-the-design-patterns-conversation-supplemental-3 PDP-03-pdp2-design-foundations-in-python-supplemental-2 PDP-04-pdp2-design-foundations-in-python-supplemental-3; do
   for role in starter solution; do
-    "$course_python" -m mypy --strict --python-version 3.14 "$opening/$role/main.py"
+    "$course_python" -m mypy --strict --no-incremental --python-version 3.14 "$opening/$role/main.py"
   done
 done
 
-printf 'source inventory and opening-lab verification passed: %s source-like files\n' "$source_count"
+printf 'source inventory and four-family opening/foundations verification passed: %s source-like files\n' "$source_count"
