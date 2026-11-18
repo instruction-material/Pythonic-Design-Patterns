@@ -1,41 +1,43 @@
-#################
-#   CONSTANTS   #
-#################
+"""Apply one score rule and construct a repeatable configured callable."""
+from collections.abc import Callable
 
-SAMPLE_TEXT = "design patterns"
-
-
-#############
-#   TYPES   #
-#############
+ScoreRule = Callable[[int], int]
 
 
-# Define the formatting strategy interface
-class Formatter:
-    """Define the formatter interface"""
-
-    def format(self, text: str) -> str:
-        """Format the provided text"""
-        raise NotImplementedError
-
-
-# Format text by capitalizing the first letter of each word
-class TitleFormatter(Formatter):
-    """Format text in title case"""
-
-    def format(self, text: str) -> str:
-        """Convert text to title case"""
-        return text.title()
+def require_score(value: int) -> int:
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise TypeError("score must be an integer")
+    if value < 0:
+        raise ValueError("score must be nonnegative")
+    return value
 
 
-#################
-#   FUNCTIONS   #
-#################
+def run_rule(score: int, rule: ScoreRule) -> int:
+    """Call the rule once and validate its resulting score."""
+    require_score(score)
+    if not callable(rule):
+        raise TypeError("rule must be callable")
+    return require_score(rule(score))
+
+
+def make_bonus_rule(bonus: int) -> ScoreRule:
+    """Capture one valid bonus without accumulating per-call state."""
+    require_score(bonus)
+
+    def apply(score: int) -> int:
+        return require_score(score) + bonus
+
+    return apply
 
 
 def main() -> None:
-    """Print a title-formatted sample phrase"""
-    print(TitleFormatter().format(SAMPLE_TEXT))
+    try:
+        bonus = make_bonus_rule(3)
+        print("doubled:", run_rule(4, lambda value: value * 2))
+        print("bonus:", run_rule(4, bonus))
+        print("repeat:", run_rule(4, bonus))
+    except NotImplementedError as error:
+        print("PDP3 starter unfinished:", error)
 
 
 if __name__ == "__main__":

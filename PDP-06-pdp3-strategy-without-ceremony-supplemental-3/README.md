@@ -1,14 +1,7 @@
-# PDP3 Strategy Without Ceremony supplemental 3
+# Compare Named Score Rules
 
-Course: Pythonic Design Patterns
-Module: PDP3 Strategy Without Ceremony supplemental 3
+Choose a strategy by observed output with a deterministic tie policy.
 
-Use the starter folder first. The starter is intentionally incomplete, and the solution shows one clean way to finish the same build after the student has worked through it.
+[Complete learner brief](starter/README.md) and [reference contract](solution/README.md).
 
-Suggested flow:
-- Read the module brief and identify the core requirement.
-- Complete the TODO markers in the starter implementation.
-- Test at least one custom case beyond the default example.
-- Compare against the solution only after the student has a working draft.
-
-Quick run hint: `python3 main.py`
+The learner completes named bodies; the supplied driver, validators and contract tests define the exercise.
