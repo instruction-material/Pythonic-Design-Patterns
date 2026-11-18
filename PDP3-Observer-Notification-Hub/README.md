@@ -1,8 +1,8 @@
-# PDP3 Observer Notification Hub
+# Observer Notification Hub
 
-Goal: build a small event bus with subscribers, payloads, and unsubscribe
-behavior.
+Use the complete working baseline for a behavior-preserving refactor; the optional client has a separate deliverable.
 
-Students should make event boundaries explicit and keep the publisher unaware of
-the specific logging, summary, and notification listeners that happen to react
-to each event.
+- [Starter brief](starter/README.md)
+- [Reference brief](solution/README.md)
+
+Each role contains main.py, test_contract.py, README.md and pinned requirements-dev.txt.

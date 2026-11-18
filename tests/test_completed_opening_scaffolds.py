@@ -10,6 +10,10 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = [
+    ('PDP-09-pdp5-observer-events-and-callbacks-supplemental-2', {'subscribe', 'publish_snapshot'}),
+    ('PDP-10-pdp5-observer-events-and-callbacks-supplemental-3', {'deliver', 'close'}),
+    ('PDP-11-pdp6-decorator-proxy-and-facade-supplemental-2', {'compose_layers', 'make_traced'}),
+    ('PDP-12-pdp6-decorator-proxy-and-facade-supplemental-3', {'run_resources', 'managed_resource'}),
     ('PDP-05-pdp3-strategy-without-ceremony-supplemental-2', {'make_bonus_rule', 'run_rule'}),
     ('PDP-06-pdp3-strategy-without-ceremony-supplemental-3', {'register_score_rule', 'choose_best'}),
     ('PDP-07-pdp4-factory-and-builder-in-python-supplemental-2', {'render_text', 'add_section'}),

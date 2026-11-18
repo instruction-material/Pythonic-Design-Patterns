@@ -1,14 +1,8 @@
-# PDP5 Observer, Events, and Callbacks supplemental 2
+# Snapshot Event Fan-Out
 
-Course: Pythonic Design Patterns
-Module: PDP5 Observer, Events, and Callbacks supplemental 2
+Complete the two named learner bodies, using the supplied driver and public behavior contracts.
 
-Use the starter folder first. The starter is intentionally incomplete, and the solution shows one clean way to finish the same build after the student has worked through it.
+- [Starter brief](starter/README.md)
+- [Reference brief](solution/README.md)
 
-Suggested flow:
-- Read the module brief and identify the core requirement.
-- Complete the TODO markers in the starter implementation.
-- Test at least one custom case beyond the default example.
-- Compare against the solution only after the student has a working draft.
-
-Quick run hint: `python3 main.py`
+Each role contains main.py, test_contract.py, README.md and pinned requirements-dev.txt.
