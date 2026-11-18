@@ -8,6 +8,8 @@ Promotion rule: restore a folder from `_archived-unlinked/` only after the live 
 
 ## Current semantic review
 
-Ten candidate families now have matching role briefs and native contracts: PDP-01 through PDP-08, Strategy Rulebook and Factory/Builder Config Kit. The four former formatting duplicates PDP-05 through PDP-08 now teach configured scores, deterministic strategy comparison, immutable construction and provider loading.
+Sixteen candidate families have matching role briefs and native contracts: PDP-01 through PDP-12, Strategy Rulebook, Factory/Builder Config Kit, Observer Notification Hub and Decorator/Proxy/Facade Toolkit. Twelve formatter duplicates now teach their declared module topics. The four larger starters are complete behavior-preserving refactoring baselines, with distinct optional client deliverables.
 
-Sixteen generated duplicates and five larger packs remain in scope. The two large refactoring starters intentionally remain complete working baselines. Site teaching and actual learner/instructor import, persistence and export qualification remain separate from native acceptance. The full course audit remains open.
+Twelve generated duplicates and three larger packs remain in scope. The Observer contracts define strong/weak subscription lifetime, captured delivery order, nested synchronous publication, serial awaited delivery, cancellation, backpressure and shutdown. The Toolkit contracts cover sync/coroutine/generator/async-generator transparency, cache keys/invalidation/concurrent misses, authorization and owned profile snapshots. The lifecycle exercise uses actual contextmanager and ExitStack behavior.
+
+Source qualification, site teaching, actual learner/instructor imports, persistence, exports and full-course acceptance retain separate evidence. The full course audit remains open.

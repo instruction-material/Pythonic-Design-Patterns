@@ -1,8 +1,8 @@
-# PDP4 Decorator Proxy Facade Toolkit
+# Decorator, Proxy and Facade Toolkit
 
-Goal: compare cross-cutting wrappers with guarded access and one simplifying
-entrypoint.
+Use the complete working baseline for a behavior-preserving refactor; the optional client has a separate deliverable.
 
-Students should leave able to explain the difference between decorating a call,
-proxying access to a service, and hiding subsystem details behind a smaller
-facade.
+- [Starter brief](starter/README.md)
+- [Reference brief](solution/README.md)
+
+Each role contains main.py, test_contract.py, README.md and pinned requirements-dev.txt.

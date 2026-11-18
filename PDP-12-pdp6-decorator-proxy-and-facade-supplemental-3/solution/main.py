@@ -1,42 +1,57 @@
-#################
-#   CONSTANTS   #
-#################
+"""Acquire a chosen resource set and release it in reverse order."""
+from collections.abc import Iterator
+from contextlib import ExitStack, contextmanager
 
-SAMPLE_TEXT = "design patterns"
+def require_name(name: str) -> str:
+    if not isinstance(name, str):
+        raise TypeError("resource name must be a string")
+    if not name.strip():
+        raise ValueError("resource name must not be blank")
+    return name
 
+@contextmanager
+def managed_resource(name: str, trace: list[str], *,
+                     fail_acquire: bool = False, suppress: bool = False) -> Iterator[str]:
+    require_name(name)
+    trace.append("acquire:" + name)
+    if fail_acquire:
+        trace.append("failed:" + name)
+        raise OSError("acquisition failed: " + name)
+    try:
+        yield name
+    except ValueError:
+        if not suppress:
+            raise
+        trace.append("suppressed:" + name)
+    finally:
+        trace.append("release:" + name)
 
-#############
-#   TYPES   #
-#############
-
-
-# Define the formatting strategy interface
-class Formatter:
-    """Define the formatter interface"""
-
-    def format(self, text: str) -> str:
-        """Format the provided text"""
-        raise NotImplementedError
-
-
-# Format text by capitalizing the first letter of each word
-class TitleFormatter(Formatter):
-    """Format text in title case"""
-
-    def format(self, text: str) -> str:
-        """Convert text to title case"""
-        return text.title()
-
-
-#################
-#   FUNCTIONS   #
-#################
-
+def run_resources(names: list[str], trace: list[str], *,
+                  fail_at: str | None = None, fail_body: bool = False,
+                  suppress_at: str | None = None) -> str:
+    selected = tuple(names)
+    for name in selected:
+        require_name(name)
+    outcome = "suppressed"
+    with ExitStack() as stack:
+        for name in selected:
+            stack.enter_context(managed_resource(
+                name, trace, fail_acquire=name == fail_at,
+                suppress=name == suppress_at))
+        trace.append("body")
+        if fail_body:
+            raise ValueError("body failed")
+        outcome = "complete"
+    return outcome
 
 def main() -> None:
-    """Print a title-formatted sample phrase"""
-    print(TitleFormatter().format(SAMPLE_TEXT))
-
+    trace: list[str] = []
+    try:
+        result = run_resources(["profile", "billing"], trace)
+        print("result:", result)
+        print("trace:", trace)
+    except NotImplementedError:
+        print("PDP6 starter unfinished: Complete managed_resource and run_resources.")
 
 if __name__ == "__main__":
     main()
