@@ -1,4 +1,4 @@
-"""Prove the supplied learner drivers satisfy the complete lab contracts."""
+"""Complete only declared bodies, then check the untouched learner drivers."""
 import ast
 import copy
 from pathlib import Path
@@ -10,6 +10,10 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = [
+    ("PDP-03-pdp2-design-foundations-in-python-supplemental-2",
+     {"render_notice", "deliver_notice"}),
+    ("PDP-04-pdp2-design-foundations-in-python-supplemental-3",
+     {"new_task", "snapshot_task"}),
     ("PDP-01-pdp1-why-python-changes-the-design-patterns-conversation-supplemental-2",
      {"title_case", "make_prefix_formatter", "__call__"}),
     ("PDP-02-pdp1-why-python-changes-the-design-patterns-conversation-supplemental-3",
