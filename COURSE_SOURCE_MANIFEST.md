@@ -10,7 +10,7 @@ Canonical source repository: `Pythonic-Design-Patterns`
 
 - Run `./verify-course-source.sh` from this repository root before treating the source pack as ready.
 - The verification gate checks for this manifest, the source backlog ledger, source-like files, removed Replit metadata, and any repo-specific readiness files.
-- Project-specific unit tests or build commands should still be run inside individual project folders when a project includes its own test harness.
+- Repaired PDP-01/PDP-02 folders contain learner contract tests. The repository gate verifies their reference behavior, completed learner fixtures and strict typing. Remaining source families still require their recorded course audit.
 
 ## Active Catalog Targets
 
@@ -50,7 +50,12 @@ Canonical source repository: `Pythonic-Design-Patterns`
 
 ## Source Inventory
 
-- Top-level folders: 40
-- Active linked folders: 31
-- Ledgered inactive/support folders: 9
-- Source-like files: 119
+- 31 active linked project folders remain addressable.
+- `tests/` holds maintainer checks for the repaired opening families.
+- `requirements-dev.txt` pins the checker and transitive tools; project runtime code uses the standard library.
+- Inactive source history remains in `_archived-unlinked/`.
+- The verifier reports current source-file counts as an inventory check.
+
+## Current qualification scope
+
+PDP-01 and PDP-02 are distinct callable-design exercises with complete in-folder contracts. Twenty-two former formatter duplicates and seven larger pattern projects remain under review. This manifest preserves their links and records partial course acceptance.
