@@ -28,4 +28,13 @@ source_count="$(find . \
 
 [ "$source_count" -gt 0 ] || fail "no source-like files found"
 
-printf 'course source verification passed: %s source-like files\n' "$source_count"
+course_python="${COURSE_PYTHON:-python3}"
+"$course_python" -B -m unittest discover -s tests -v
+
+for opening in PDP-01-pdp1-why-python-changes-the-design-patterns-conversation-supplemental-2 PDP-02-pdp1-why-python-changes-the-design-patterns-conversation-supplemental-3; do
+  for role in starter solution; do
+    "$course_python" -m mypy --strict --python-version 3.14 "$opening/$role/main.py"
+  done
+done
+
+printf 'source inventory and opening-lab verification passed: %s source-like files\n' "$source_count"

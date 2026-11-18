@@ -1,46 +1,28 @@
 # Pythonic Design Patterns
 
-This folder is structured as the future
-`instruction-material/Pythonic-Design-Patterns` repository for the site course.
+Course-owned learner and reference files for Python-specific design judgment and refactoring.
 
-The materials follow the core project sequence used by the course:
+The two opening callable labs have complete in-folder briefs, learner contract tests, unfinished scaffolds and runnable references:
 
-1. `PDP1-Strategy-Rulebook`
-2. `PDP2-Factory-and-Builder-Config-Kit`
-3. `PDP3-Observer-Notification-Hub`
-4. `PDP4-Decorator-Proxy-Facade-Toolkit`
-5. `PDP5-State-Command-Quest-Loop`
-6. `PDP6-Adapter-Template-Import-Pipeline`
-7. `PDP7-Pythonic-Refactor-Capstone`
+- PDP-01: function, configured closure and callable-object comparison.
+- PDP-02: named callable registry and explicit boundary errors.
 
-Each project contains:
+Each imported starter includes its own README, main.py, test_contract.py and requirements-dev.txt. Complete the named bodies, run the local contract tests, then compare the reference. The programs use the standard library; pinned development requirements provide static type checking.
 
-- `starter/` with a guided scaffold and TODO-style simplifications
-- `solution/` with a complete reference implementation
-- `README.md` describing the engineering goal and how it fits the course
+## Native setup and verification
 
-## Tooling
+Use CPython 3.14. From this repository root on macOS/Linux:
 
-Preferred IDEs:
+```sh
+python3.14 -m venv .venv
+.venv/bin/python -m pip install -r requirements-dev.txt
+COURSE_PYTHON=.venv/bin/python ./verify-course-source.sh
+```
 
-- `PyCharm`
-- `VS Code`
+On Windows, create the environment with `py -3.14 -m venv .venv` and use `.venv\Scripts\python.exe` for the Python commands. Run unit tests with `-B -m unittest discover -s tests -v` and type-check each opening main.py with `-m mypy --strict --python-version 3.14`.
 
-Expected local toolchain:
+The repository gate verifies source inventory plus the repaired opening scope: thirteen maintainer tests, both completed learner fixtures and strict type checks of four starter/reference programs. In-folder five-test contracts are learner checks; repository tests also check pristine scaffolds and are maintainer checks.
 
-- `python3`
-- `venv`
-- optional `pytest` for extra refactoring safety
+## Remaining review
 
-## Local Validation Workflow
-
-From this folder:
-
-1. `python3 -m compileall .`
-2. Run any selected starter or solution with `python3 path/to/main.py`
-
-## Teaching Notes
-
-- Ask students to justify why a plain function, module, or data class was not enough before they add a pattern-shaped layer.
-- Pair every pattern lesson with one explicit "keep it simpler" decision.
-- Keep the course grounded in maintainability, boundary cleanup, and refactoring rather than pattern collecting.
+Twenty-two generated formatter pairs and seven larger pattern projects remain in the course audit. A passing opening gate establishes the opening scope. SOURCE_BACKLOG.md tracks the other sources and whole-course work.

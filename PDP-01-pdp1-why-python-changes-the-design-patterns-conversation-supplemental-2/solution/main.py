@@ -1,41 +1,59 @@
-#################
-#   CONSTANTS   #
-#################
+"""Compare a function, a configured closure and a callable value."""
 
-SAMPLE_TEXT = "design patterns"
+from collections.abc import Callable, Iterable
+from dataclasses import dataclass
 
-
-#############
-#   TYPES   #
-#############
+Formatter = Callable[[str], str]
 
 
-# Define the formatting strategy interface
-class Formatter:
-    """Define the formatter interface"""
-
-    def format(self, text: str) -> str:
-        """Format the provided text"""
-        raise NotImplementedError
+def require_text(value: str) -> str:
+    if not isinstance(value, str):
+        raise TypeError("text must be a string")
+    return value
 
 
-# Format text by capitalizing the first letter of each word
-class TitleFormatter(Formatter):
-    """Format text in title case"""
-
-    def format(self, text: str) -> str:
-        """Convert text to title case"""
-        return text.title()
+def title_case(text: str) -> str:
+    """Use Python's title-casing rules; preserve surrounding whitespace."""
+    return require_text(text).title()
 
 
-#################
-#   FUNCTIONS   #
-#################
+def make_prefix_formatter(prefix: str) -> Formatter:
+    """Capture one validated, immutable configuration value."""
+    require_text(prefix)
+
+    def format_text(text: str) -> str:
+        return prefix + require_text(text)
+
+    return format_text
+
+
+@dataclass(frozen=True)
+class PrefixFormatter:
+    """Expose the same callable behavior with inspectable configuration."""
+
+    prefix: str
+
+    def __post_init__(self) -> None:
+        require_text(self.prefix)
+
+    def __call__(self, text: str) -> str:
+        return self.prefix + require_text(text)
+
+
+def format_messages(messages: Iterable[str], formatter: Formatter) -> list[str]:
+    """Return new results in order without changing the input collection."""
+    results = []
+    for message in messages:
+        result = formatter(require_text(message))
+        results.append(require_text(result))
+    return results
 
 
 def main() -> None:
-    """Print a title-formatted sample phrase"""
-    print(TitleFormatter().format(SAMPLE_TEXT))
+    messages = ["design patterns", ""]
+    print("function:", format_messages(messages, title_case))
+    print("closure:", format_messages(messages, make_prefix_formatter("LOG: ")))
+    print("object:", format_messages(messages, PrefixFormatter("LOG: ")))
 
 
 if __name__ == "__main__":
