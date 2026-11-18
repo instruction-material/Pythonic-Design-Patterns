@@ -1,42 +1,53 @@
-#################
-#   CONSTANTS   #
-#################
-
-SAMPLE_TEXT = "design patterns"
+"""A bounded history defines exactly which local edits can still be reversed."""
 
 
-#############
-#   TYPES   #
-#############
+class Document:
+    def __init__(self, text: str = "", *, limit: int = 2) -> None:
+        if not isinstance(text, str):
+            raise TypeError("text must be a string")
+        if not isinstance(limit, int) or isinstance(limit, bool):
+            raise TypeError("limit must be an integer")
+        if limit < 1:
+            raise ValueError("limit must be positive")
+        self._text, self._limit = text, limit
+        self._undo: list[str] = []
+
+    @property
+    def text(self) -> str:
+        return self._text
+
+    @property
+    def history(self) -> tuple[str, ...]:
+        return tuple(self._undo)
 
 
-# Define the formatting strategy interface
-class Formatter:
-    """Define the formatter interface"""
-
-    def format(self, text: str) -> str:
-        """Format the provided text"""
-        raise NotImplementedError
-
-
-# Format text by capitalizing the first letter of each word
-class TitleFormatter(Formatter):
-    """Format text in title case"""
-
-    def format(self, text: str) -> str:
-        """Convert text to title case"""
-        return text.title()
+def apply_edit(document: Document, text: str) -> None:
+    if not isinstance(text, str):
+        raise TypeError("text must be a string")
+    document._undo.append(document.text)
+    del document._undo[:-document._limit]
+    document._text = text
 
 
-#################
-#   FUNCTIONS   #
-#################
+def undo_edit(document: Document) -> bool:
+    if not document._undo:
+        return False
+    document._text = document._undo.pop()
+    return True
 
 
 def main() -> None:
-    """Print a title-formatted sample phrase"""
-    print(TitleFormatter().format(SAMPLE_TEXT))
+    document = Document()
+    for text in ["first", "second", "third"]:
+        apply_edit(document, text)
+    print("edited:", document.text)
+    undo_edit(document); print("undo:", document.text)
+    undo_edit(document); print("undo:", document.text)
+    print("empty:", undo_edit(document))
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except NotImplementedError as error:
+        print("starter unfinished:", error)

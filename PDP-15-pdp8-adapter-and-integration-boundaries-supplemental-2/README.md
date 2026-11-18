@@ -1,14 +1,5 @@
-# PDP8 Adapter and Integration Boundaries supplemental 2
+# Versioned Measurement Adapter
 
-Course: Pythonic Design Patterns
-Module: PDP8 Adapter and Integration Boundaries supplemental 2
+Translate v1 {version:1, timestamp:offset ISO text, temperature:{value:number,unit:C/F/K}} and v2 {version:2, measured_at:offset ISO text, kelvin:number} into an immutable UTC Measurement with Celsius units. Both versions require every shown field; version defaults to 1, extra fields are ignored, naive timestamps and nonfinite/bool temperatures are rejected. Export canonical v2 and verify round trips within floating-point tolerance. Preserve original validation errors as AdapterError causes.
 
-Use the starter folder first. The starter is intentionally incomplete, and the solution shows one clean way to finish the same build after the student has worked through it.
-
-Suggested flow:
-- Read the module brief and identify the core requirement.
-- Complete the TODO markers in the starter implementation.
-- Test at least one custom case beyond the default example.
-- Compare against the solution only after the student has a working draft.
-
-Quick run hint: `python3 main.py`
+Start in `starter/`; compare the complete reference in `solution/` after producing an independent attempt. Each imported role contains the runnable driver, contract tests and its brief.

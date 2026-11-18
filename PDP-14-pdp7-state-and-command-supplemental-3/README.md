@@ -1,14 +1,5 @@
-# PDP7 State and Command supplemental 3
+# Bounded Editor Undo
 
-Course: Pythonic Design Patterns
-Module: PDP7 State and Command supplemental 3
+Store the previous immutable text on every replacement and retain only the newest limit entries. Undo is LIFO, returns False for an empty history, and restores the previous text exactly, including repeated and empty edits. Each document owns its own history. The oldest discarded state is outside the undo window.
 
-Use the starter folder first. The starter is intentionally incomplete, and the solution shows one clean way to finish the same build after the student has worked through it.
-
-Suggested flow:
-- Read the module brief and identify the core requirement.
-- Complete the TODO markers in the starter implementation.
-- Test at least one custom case beyond the default example.
-- Compare against the solution only after the student has a working draft.
-
-Quick run hint: `python3 main.py`
+Start in `starter/`; compare the complete reference in `solution/` after producing an independent attempt. Each imported role contains the runnable driver, contract tests and its brief.

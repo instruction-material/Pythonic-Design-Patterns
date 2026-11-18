@@ -1,14 +1,5 @@
-# PDP8 Adapter and Integration Boundaries supplemental 3
+# Injected Vendor Boundary
 
-Course: Pythonic Design Patterns
-Module: PDP8 Adapter and Integration Boundaries supplemental 3
+Call an injected zero-argument reader exactly once. Translate {values:[integers]} into an owned immutable tuple; missing values defaults to an empty list, extra fields are ignored, bool/float values are rejected. Wrap reader OSError/TimeoutError as SourceError with the original cause. Preserve programming exceptions. Compute a maximum for nonempty data and raise ValueError for empty data. Use local readers without network access.
 
-Use the starter folder first. The starter is intentionally incomplete, and the solution shows one clean way to finish the same build after the student has worked through it.
-
-Suggested flow:
-- Read the module brief and identify the core requirement.
-- Complete the TODO markers in the starter implementation.
-- Test at least one custom case beyond the default example.
-- Compare against the solution only after the student has a working draft.
-
-Quick run hint: `python3 main.py`
+Start in `starter/`; compare the complete reference in `solution/` after producing an independent attempt. Each imported role contains the runnable driver, contract tests and its brief.
