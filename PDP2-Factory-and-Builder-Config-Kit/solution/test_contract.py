@@ -1,5 +1,5 @@
 import unittest
-from main import Report, ReportBuilder, make_exporter
+from main import Report, ReportBuilder, make_exporter, FactoryConstructionError
 
 
 class ReportContract(unittest.TestCase):
@@ -33,6 +33,22 @@ class ReportContract(unittest.TestCase):
         for value in ["missing", "Markdown", ""]:
             with self.assertRaises(ValueError): make_exporter(value)
         with self.assertRaises(TypeError): make_exporter(None)
+        seen = []
+        failure = OSError("broken constructor")
+        def broken():
+            seen.append("selected")
+            raise failure
+        def unused():
+            seen.append("unused")
+            return lambda report: "unused"
+        with self.assertRaises(FactoryConstructionError) as result:
+            make_exporter("broken", {"unused": unused, "broken": broken})
+        self.assertIs(result.exception.__cause__, failure)
+        self.assertEqual(seen, ["selected"])
+        with self.assertRaises(TypeError):
+            make_exporter("bad", {"bad": lambda: 3})
+        with self.assertRaises(TypeError):
+            make_exporter("bad", {"bad": None})
 
     def test_construction_validation(self):
         with self.assertRaises(ValueError): Report(" ")
@@ -41,6 +57,13 @@ class ReportContract(unittest.TestCase):
         with self.assertRaises(TypeError): Report("Plan", include_footer=1)
         with self.assertRaises(ValueError): ReportBuilder("Plan").tagged(" ")
         with self.assertRaises(TypeError): ReportBuilder("Plan").add_section(None)
+        with self.assertRaises(TypeError): ReportBuilder()
+        with self.assertRaises(ValueError): Report("Plan", include_footer=True)
+        builder = ReportBuilder("Plan").with_footer()
+        with self.assertRaises(ValueError): builder.build()
+        completed = builder.tagged("audit").build()
+        self.assertEqual(completed.tag, "audit")
+        self.assertTrue(completed.include_footer)
 
     def test_mutable_report_revalidated_at_export(self):
         report = Report("Plan")
@@ -48,6 +71,10 @@ class ReportContract(unittest.TestCase):
         for name in ["markdown", "text"]:
             with self.assertRaises(ValueError): make_exporter(name)(report)
         report.title = "Plan"
+        attributed = Report("Plan", include_footer=True, tag="audit")
+        attributed.tag = None
+        with self.assertRaises(ValueError):
+            make_exporter("text")(attributed)
         report.sections.append(None)
         for name in ["markdown", "text"]:
             with self.assertRaises(TypeError): make_exporter(name)(report)

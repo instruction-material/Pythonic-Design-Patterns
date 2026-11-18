@@ -1,8 +1,13 @@
 """Build owned report snapshots and choose a callable exporter."""
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 
 ReportExporter = Callable[["Report"], str]
+ExporterFactory = Callable[[], ReportExporter]
+
+
+class FactoryConstructionError(RuntimeError):
+    """A selected exporter constructor failed; retain its original cause."""
 
 
 def require_text(text: str) -> str:
@@ -37,6 +42,8 @@ def validate_report(report: Report) -> None:
         raise TypeError("footer must be a boolean")
     if report.tag is not None:
         require_text(report.tag)
+    if report.include_footer and report.tag is None:
+        raise ValueError("a generated footer requires an attribution tag")
 
 
 class ReportBuilder:
@@ -96,14 +103,29 @@ class TextExporter:
         return self.export(report)
 
 
-def make_exporter(format_name: str) -> ReportExporter:
+EXPORTER_FACTORIES: dict[str, ExporterFactory] = {"markdown": MarkdownExporter, "text": TextExporter}
+
+
+def make_exporter(
+    format_name: str, factories: Mapping[str, ExporterFactory] | None = None,
+) -> ReportExporter:
+    """Select by registry and construct only the chosen exporter, once."""
     if not isinstance(format_name, str):
         raise TypeError("format name must be a string")
-    if format_name == "markdown":
-        return MarkdownExporter()
-    if format_name == "text":
-        return TextExporter()
-    raise ValueError("unknown format: " + format_name)
+    available = EXPORTER_FACTORIES if factories is None else factories
+    try:
+        selected = available[format_name]
+    except KeyError as error:
+        raise ValueError("unknown format: " + format_name) from error
+    if not callable(selected):
+        raise TypeError("exporter factory must be callable")
+    try:
+        exporter = selected()
+    except Exception as error:
+        raise FactoryConstructionError(format_name) from error
+    if not callable(exporter):
+        raise TypeError("constructed exporter must be callable")
+    return exporter
 
 
 def build_sample_report() -> Report:
