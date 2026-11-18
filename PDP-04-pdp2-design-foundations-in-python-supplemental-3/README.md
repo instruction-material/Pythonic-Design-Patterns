@@ -1,14 +1,7 @@
-# PDP2 Design Foundations in Python supplemental 3
+# Owned mutable records and snapshots
 
-Course: Pythonic Design Patterns
-Module: PDP2 Design Foundations in Python supplemental 3
+Complete new_task and snapshot_task. Own each mutable list,preserve input values/order/duplicates,and validate/copy the current record at the snapshot boundary.
 
-Use the starter folder first. The starter is intentionally incomplete, and the solution shows one clean way to finish the same build after the student has worked through it.
+[Complete learner contract and setup](starter/README.md). [Reference program and the same contract](solution/README.md).
 
-Suggested flow:
-- Read the module brief and identify the core requirement.
-- Complete the TODO markers in the starter implementation.
-- Test at least one custom case beyond the default example.
-- Compare against the solution only after the student has a working draft.
-
-Quick run hint: `python3 main.py`
+Each role contains main.py,test_contract.py,README.md and requirements-dev.txt. Complete only the declared learner bodies,then run the five contract tests and the documented fresh strict type check. Compare the reference after an attempt.
