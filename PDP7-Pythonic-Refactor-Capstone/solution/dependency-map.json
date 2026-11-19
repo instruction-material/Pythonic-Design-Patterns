@@ -1,0 +1,18 @@
+{
+  "main": [
+    "models",
+    "processing",
+    "rendering"
+  ],
+  "processing": [
+    "models"
+  ],
+  "rendering": [
+    "models"
+  ],
+  "models": [],
+  "comparison_client": [
+    "main"
+  ],
+  "baseline_original": []
+}

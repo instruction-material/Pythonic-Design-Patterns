@@ -10,6 +10,14 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = [
+    ('PDP-17-pdp9-template-method-versus-higher-order-functions-supplemental-2', {'run_steps', 'compose_stages'}),
+    ('PDP-18-pdp9-template-method-versus-higher-order-functions-supplemental-3', {'managed_values', 'take_values'}),
+    ('PDP-19-pdp10-singleton-global-state-and-module-patterns', {'run', 'create_application'}),
+    ('PDP-20-pdp10-singleton-global-state-and-module-patterns', {'request_context', 'remember'}),
+    ('PDP-21-pdp11-refactoring-python-code-smells-supplemental-2', {'format_refactored', 'capture_outcome'}),
+    ('PDP-22-pdp11-refactoring-python-code-smells-supplemental-3', {'normalize_rows', 'publish_rows'}),
+    ('PDP-23-pdp12-capstone-pythonic-refactor-studio-supplemental-2', {'affected_modules', 'dependency_map'}),
+    ('PDP-24-pdp12-capstone-pythonic-refactor-studio-supplemental-3', {'make_registry', 'render_document'}),
     ('PDP-13-pdp7-state-and-command-supplemental-2', {'run_queue', 'make_increment'}),
     ('PDP-14-pdp7-state-and-command-supplemental-3', {'undo_edit', 'apply_edit'}),
     ('PDP-15-pdp8-adapter-and-integration-boundaries-supplemental-2', {'measurement_payload', 'parse_measurement'}),

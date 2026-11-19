@@ -1,42 +1,58 @@
-#################
-#   CONSTANTS   #
-#################
+"""Compare a fixed workflow's hooks with explicitly composed callables."""
+from collections.abc import Callable, Iterable
 
-SAMPLE_TEXT = "design patterns"
-
-
-#############
-#   TYPES   #
-#############
+IntStep = Callable[[int], int]
 
 
-# Define the formatting strategy interface
-class Formatter:
-    """Define the formatter interface"""
-
-    def format(self, text: str) -> str:
-        """Format the provided text"""
-        raise NotImplementedError
+def integer(value: object) -> int:
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise TypeError("values and stage results must be integers")
+    return value
 
 
-# Format text by capitalizing the first letter of each word
-class TitleFormatter(Formatter):
-    """Format text in title case"""
+def compose_stages(*steps: IntStep) -> IntStep:
+    if not all(callable(step) for step in steps):
+        raise TypeError("each stage must be callable")
+    owned = tuple(steps)
 
-    def format(self, text: str) -> str:
-        """Convert text to title case"""
-        return text.title()
+    def composed(value: int) -> int:
+        result = integer(value)
+        for step in owned:
+            result = integer(step(result))
+        return result
+
+    return composed
 
 
-#################
-#   FUNCTIONS   #
-#################
+def run_steps(values: Iterable[int], step: IntStep) -> list[int]:
+    if not callable(step):
+        raise TypeError("step must be callable")
+    owned = tuple(integer(value) for value in values)
+    return [integer(step(value)) for value in owned]
+
+
+class TemplatePipeline:
+    def transform(self, value: int) -> int:
+        return value
+
+    def run(self, values: Iterable[int]) -> list[int]:
+        return run_steps(values, self.transform)
+
+
+class AddThenDouble(TemplatePipeline):
+    def transform(self, value: int) -> int:
+        return (value + 1) * 2
 
 
 def main() -> None:
-    """Print a title-formatted sample phrase"""
-    print(TitleFormatter().format(SAMPLE_TEXT))
+    values = [1, 2]
+    print("functional:", run_steps(values, compose_stages(lambda n: n + 1, lambda n: n * 2)))
+    print("template:", AddThenDouble().run(values))
+    print("input:", values)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except NotImplementedError as error:
+        print("starter unfinished:", error)

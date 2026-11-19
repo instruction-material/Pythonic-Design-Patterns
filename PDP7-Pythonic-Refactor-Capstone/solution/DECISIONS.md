@@ -1,0 +1,3 @@
+# Decisions
+
+Pure preparation and formatting have separate change reasons; main.py wires explicit collaborators. Functions and frozen values suffice, so no Singleton, service locator, Builder hierarchy or universal event bus is added. The provider dictionary is copied before reading so reader-side registry mutation cannot alter a chosen provider. The caller owns resource lifetimes; the workflow owns only a memory snapshot. A single write reduces partial output risk but cannot undo an external sink that changes state before raising. Raw kind matching and exception order remain compatibility requirements. JSON is an explicit new provider with separate tests. Revert the extraction commit or restore the saved baseline project to roll back structure without changing data.
