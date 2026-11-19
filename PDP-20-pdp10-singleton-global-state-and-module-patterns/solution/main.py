@@ -1,42 +1,68 @@
-#################
-#   CONSTANTS   #
-#################
+"""Request context and an explicitly resettable process cache have different owners."""
+from collections.abc import Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar, copy_context
 
-SAMPLE_TEXT = "design patterns"
-
-
-#############
-#   TYPES   #
-#############
+_REQUEST_ID: ContextVar[str | None] = ContextVar("request_id", default=None)
+_PROCESS_CACHE: dict[str, str] = {}
 
 
-# Define the formatting strategy interface
-class Formatter:
-    """Define the formatter interface"""
-
-    def format(self, text: str) -> str:
-        """Format the provided text"""
-        raise NotImplementedError
-
-
-# Format text by capitalizing the first letter of each word
-class TitleFormatter(Formatter):
-    """Format text in title case"""
-
-    def format(self, text: str) -> str:
-        """Convert text to title case"""
-        return text.title()
+def text(value: object) -> str:
+    if not isinstance(value, str):
+        raise TypeError("value must be text")
+    if not value:
+        raise ValueError("value must be nonempty")
+    return value
 
 
-#################
-#   FUNCTIONS   #
-#################
+@contextmanager
+def request_context(name: str) -> Iterator[str]:
+    text(name)
+    token = _REQUEST_ID.set(name)
+    try:
+        yield name
+    finally:
+        _REQUEST_ID.reset(token)
+
+
+def current_request() -> str:
+    value = _REQUEST_ID.get()
+    if value is None:
+        raise LookupError("no request context")
+    return value
+
+
+def remember(key: str, value: str) -> str:
+    text(key)
+    text(value)
+    return _PROCESS_CACHE.setdefault(key, value)
+
+
+def cache_snapshot() -> dict[str, str]:
+    return dict(_PROCESS_CACHE)
+
+
+def clear_cache() -> None:
+    _PROCESS_CACHE.clear()
 
 
 def main() -> None:
-    """Print a title-formatted sample phrase"""
-    print(TitleFormatter().format(SAMPLE_TEXT))
+    clear_cache()
+    try:
+        with request_context("outer"):
+            copied = copy_context()
+            with request_context("inner"):
+                print("inside:", current_request())
+            print("restored:", current_request())
+        print("copied:", copied.run(current_request))
+        print("cached:", remember("host", "first"), remember("host", "second"))
+    finally:
+        clear_cache()
+    print("cache after shutdown:", cache_snapshot())
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except NotImplementedError as error:
+        print("starter unfinished:", error)

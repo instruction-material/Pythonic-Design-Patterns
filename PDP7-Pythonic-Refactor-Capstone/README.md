@@ -1,7 +1,3 @@
-# PDP7 Pythonic Refactor Capstone
+# Pythonic Refactor Studio
 
-Goal: start from a messy text-processing workflow, diagnose the biggest design
-pressures, and refactor toward a smaller, more Pythonic structure.
-
-Students should document which patterns naturally arrive, which ones they reject
-as overkill, and how the final code becomes easier to test and explain.
+Start with the complete [learner baseline](starter/README.md), the frozen original and its public characterization tests. The [reference](solution/README.md) preserves that behavior while separating application responsibilities. Both briefs distinguish PDP11 extraction practice from the PDP12 full studio and their optional clients.

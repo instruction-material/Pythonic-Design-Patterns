@@ -10,7 +10,7 @@ Canonical source repository: `Pythonic-Design-Patterns`
 
 - Run `./verify-course-source.sh` from this repository root before treating the source pack as ready.
 - The verification gate checks for this manifest, the source backlog ledger, source-like files, removed Replit metadata, and any repo-specific readiness files.
-- The twenty-two named candidate families contain role-local contract tests. The repository gate verifies their reference behavior, completed learner fixtures and strict typing. Remaining source families still require their recorded course audit.
+- All thirty-one candidate families contain role-local contract tests. The repository gate verifies reference behavior, completed learner fixtures and strict typing, including every production module in the larger capstone. The final candidate still requires its recorded typing and site acceptance evidence before qualification.
 
 ## Active Catalog Targets
 
@@ -51,14 +51,14 @@ Canonical source repository: `Pythonic-Design-Patterns`
 ## Source Inventory
 
 - 31 active linked project folders remain addressable.
-- `tests/` holds maintainer checks for the twenty-two named candidate families.
+- `tests/` holds maintainer checks for all thirty-one candidate families.
 - `requirements-dev.txt` pins the checker and transitive tools; project runtime code uses the standard library.
 - Inactive source history remains in `_archived-unlinked/`.
 - The verifier reports current source-file counts as an inventory check.
 
 ## Current qualification scope
 
-The twenty-two-family candidate covers PDP-01 through PDP-16, Strategy Rulebook, Factory/Builder Config Kit, Observer Notification Hub, Decorator/Proxy/Facade Toolkit, State/Command Quest Loop and Adapter/Template Import Pipeline. Each imported role has a complete brief, program, public contract suite and pinned development requirements. Sixteen families have named learner holes and matching completed-scaffold checks. Six larger families retain working refactoring baselines and separate optional clients.
+The thirty-one-family candidate covers PDP-01 through PDP-24 and seven larger project packs. Each imported role has a complete brief, program, public contract suite and pinned development requirements. Twenty-four families have named learner holes and matching completed-scaffold checks. Seven larger families retain complete working baselines and distinct client deliverables. The capstone retains a frozen original and compares 72 behavior combinations in each role; its application API has fourteen additional contract groups. Native maintainer checks pass for the final replacements; full strict typing and site acceptance remain separate pending gates.
 
 The async contract tests run under standard Python 3.14 with the test runner owning the loop. Default imported demonstrations remain synchronous and run in the site IDE. Actual browser import, persistence and export acceptance is recorded separately by the site audit.
 

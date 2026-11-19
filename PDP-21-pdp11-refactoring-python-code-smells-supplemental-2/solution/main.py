@@ -1,42 +1,62 @@
-#################
-#   CONSTANTS   #
-#################
-
-SAMPLE_TEXT = "design patterns"
+"""Characterize a small transformation before replacing its structure."""
+from collections.abc import Callable, Iterable, Mapping
 
 
-#############
-#   TYPES   #
-#############
+def format_legacy(rows: Iterable[Mapping[str, str]], kind_filter: str = "all",
+                  uppercase: bool = False) -> str:
+    results: list[str] = []
+    for row in rows:
+        if kind_filter != "all" and row["kind"] != kind_filter:
+            continue
+        title = row["title"].strip().lower()
+        body = row["body"].strip().lower()
+        if uppercase:
+            title, body = title.upper(), body.upper()
+        if row["kind"] == "blog":
+            results.append(f"[BLOG] {title}: {body}")
+        elif row["kind"] == "news":
+            results.append(f"[NEWS] {title}: {body}")
+        else:
+            results.append(f"[OTHER] {title}: {body}")
+    return "\n".join(results)
 
 
-# Define the formatting strategy interface
-class Formatter:
-    """Define the formatter interface"""
-
-    def format(self, text: str) -> str:
-        """Format the provided text"""
-        raise NotImplementedError
+def render_fields(title: str, body: str, kind: str) -> str:
+    prefix = {"blog": "BLOG", "news": "NEWS"}.get(kind, "OTHER")
+    return f"[{prefix}] {title}: {body}"
 
 
-# Format text by capitalizing the first letter of each word
-class TitleFormatter(Formatter):
-    """Format text in title case"""
+def format_refactored(rows: Iterable[Mapping[str, str]], kind_filter: str = "all",
+                      uppercase: bool = False) -> str:
+    results: list[str] = []
+    for row in rows:
+        if kind_filter != "all" and row["kind"] != kind_filter:
+            continue
+        title = row["title"].strip().lower()
+        body = row["body"].strip().lower()
+        if uppercase:
+            title, body = title.upper(), body.upper()
+        results.append(render_fields(title, body, row["kind"]))
+    return "\n".join(results)
 
-    def format(self, text: str) -> str:
-        """Convert text to title case"""
-        return text.title()
 
-
-#################
-#   FUNCTIONS   #
-#################
+def capture_outcome(operation: Callable[[], str]) -> tuple[str, str]:
+    try:
+        return ("returned", operation())
+    except Exception as error:
+        return ("raised", type(error).__name__ + ": " + str(error))
 
 
 def main() -> None:
-    """Print a title-formatted sample phrase"""
-    print(TitleFormatter().format(SAMPLE_TEXT))
+    rows = [{"title": " Hello ", "kind": " BLOG ", "body": " World "}]
+    before = capture_outcome(lambda: format_legacy(rows))
+    after = capture_outcome(lambda: format_refactored(rows))
+    print("baseline:", before)
+    print("same:", before == after)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except NotImplementedError as error:
+        print("starter unfinished:", error)

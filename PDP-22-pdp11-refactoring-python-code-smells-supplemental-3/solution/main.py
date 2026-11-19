@@ -1,42 +1,32 @@
-#################
-#   CONSTANTS   #
-#################
-
-SAMPLE_TEXT = "design patterns"
+"""Separate deterministic preparation from externally visible writes."""
+from collections.abc import Callable, Iterable
 
 
-#############
-#   TYPES   #
-#############
+def normalize_rows(rows: Iterable[str]) -> tuple[str, ...]:
+    owned = tuple(rows)
+    if not all(isinstance(row, str) for row in owned):
+        raise TypeError("rows must contain text")
+    return tuple(cleaned for row in owned if (cleaned := row.strip()))
 
 
-# Define the formatting strategy interface
-class Formatter:
-    """Define the formatter interface"""
-
-    def format(self, text: str) -> str:
-        """Format the provided text"""
-        raise NotImplementedError
-
-
-# Format text by capitalizing the first letter of each word
-class TitleFormatter(Formatter):
-    """Format text in title case"""
-
-    def format(self, text: str) -> str:
-        """Convert text to title case"""
-        return text.title()
-
-
-#################
-#   FUNCTIONS   #
-#################
+def publish_rows(rows: Iterable[str], write: Callable[[str], None]) -> int:
+    if not callable(write):
+        raise TypeError("writer must be callable")
+    prepared = normalize_rows(rows)
+    for row in prepared:
+        write(row)
+    return len(prepared)
 
 
 def main() -> None:
-    """Print a title-formatted sample phrase"""
-    print(TitleFormatter().format(SAMPLE_TEXT))
+    written: list[str] = []
+    count = publish_rows([" alpha ", "", " beta "], written.append)
+    print("written:", written)
+    print("count:", count)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except NotImplementedError as error:
+        print("starter unfinished:", error)

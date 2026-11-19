@@ -1,42 +1,52 @@
-#################
-#   CONSTANTS   #
-#################
-
-SAMPLE_TEXT = "design patterns"
-
-
-#############
-#   TYPES   #
-#############
+"""An explicit surrounding context owns a lazy stream's lifetime."""
+from collections.abc import Generator, Iterable, Iterator
+from contextlib import contextmanager
+from io import StringIO
 
 
-# Define the formatting strategy interface
-class Formatter:
-    """Define the formatter interface"""
-
-    def format(self, text: str) -> str:
-        """Format the provided text"""
-        raise NotImplementedError
+def integer(value: object) -> int:
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise TypeError("values must be integers")
+    return value
 
 
-# Format text by capitalizing the first letter of each word
-class TitleFormatter(Formatter):
-    """Format text in title case"""
+@contextmanager
+def managed_values(values: Iterable[int], events: list[str]) -> Iterator[Generator[int, None, None]]:
+    owned = tuple(integer(value) for value in values)
+    resource = StringIO("".join(str(value) + "\n" for value in owned))
+    events.append("open")
+    stream = (int(line) for line in resource)
+    try:
+        yield stream
+    finally:
+        stream.close()
+        resource.close()
+        events.append("close")
 
-    def format(self, text: str) -> str:
-        """Convert text to title case"""
-        return text.title()
 
-
-#################
-#   FUNCTIONS   #
-#################
+def take_values(values: Iterator[int], count: int) -> list[int]:
+    integer(count)
+    if count < 0:
+        raise ValueError("count must be nonnegative")
+    result: list[int] = []
+    for _ in range(count):
+        try:
+            result.append(next(values))
+        except StopIteration:
+            break
+    return result
 
 
 def main() -> None:
-    """Print a title-formatted sample phrase"""
-    print(TitleFormatter().format(SAMPLE_TEXT))
+    events: list[str] = []
+    with managed_values([3, 5, 8], events) as values:
+        print("partial:", take_values(values, 2))
+    print("after:", next(values, "closed"))
+    print("events:", events)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except NotImplementedError as error:
+        print("starter unfinished:", error)
