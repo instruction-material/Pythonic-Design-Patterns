@@ -1,212 +1,306 @@
+"""State-dependent actions with one-shot commands and bounded, reversible history."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from collections.abc import Callable
+from dataclasses import dataclass
+import json
 from typing import Protocol
 
-#################
-#   CONSTANTS   #
-#################
-
-CAMP_STATE_NAME = "camp"
-EXPLORING_STATE_NAME = "exploring"
-BOSS_STATE_NAME = "boss"
-MOVE_COMMAND_NAME = "move"
-REST_COMMAND_NAME = "rest"
-ATTACK_COMMAND_NAME = "attack"
-STARTING_LOCATION = CAMP_STATE_NAME
-FOREST_LOCATION = "forest trail"
-BOSS_LOCATION = "boss gate"
-INITIAL_ENERGY = 3
-MINIMUM_ATTACK_ENERGY = 0
-ENERGY_STEP = 1
-NO_ENEMY_MESSAGE = "No enemy at camp."
-SAVE_ENERGY_MESSAGE = "Save your energy for the boss."
-BOSS_GATE_MESSAGE = "You are already at the boss gate."
+LOCATIONS = {"camp": "camp", "exploring": "forest trail", "boss": "boss gate"}
 
 
-#############
-#   TYPES   #
-#############
+def integer(value: object, label: str, minimum: int = 0) -> int:
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise TypeError(label + " must be an integer")
+    if value < minimum:
+        raise ValueError(label + " is too small")
+    return value
 
 
-# Define the interface shared by all quest states
-class QuestState(Protocol):
-    """Define actions supported by every quest state"""
+@dataclass(frozen=True)
+class Snapshot:
+    mode: str
+    location: str
+    energy: int
 
+    def __post_init__(self) -> None:
+        if self.mode not in LOCATIONS:
+            raise ValueError("unknown quest mode")
+        if not isinstance(self.location, str) or not self.location.strip():
+            raise ValueError("location must be nonblank text")
+        integer(self.energy, "energy")
+
+
+@dataclass(frozen=True)
+class Action:
     name: str
+    amount: int = 1
 
+    def __post_init__(self) -> None:
+        if self.name not in {"move", "rest", "attack"}:
+            raise ValueError("unknown action")
+        integer(self.amount, "amount", 1)
+        if self.name == "move" and self.amount != 1:
+            raise ValueError("move amount must be one")
+
+
+class InvalidAction(ValueError):
+    """A well-formed action is unavailable in the current mode."""
+
+
+class QuestState(Protocol):
+    name: str
+    def move(self, context: QuestContext) -> None: ...
+    def attack(self, context: QuestContext, amount: int = 1) -> None: ...
+
+
+class CampState:
+    name = "camp"
     def move(self, context: QuestContext) -> None:
-        """Handle a move command in this state"""
-        ...
-
-    def attack(self, context: QuestContext) -> None:
-        """Handle an attack command in this state"""
-        ...
+        context.transition(ExploringState(), LOCATIONS["exploring"])
+    def attack(self, context: QuestContext, amount: int = 1) -> None:
+        pass
 
 
-# Store the mutable quest state for the command loop
-@dataclass
+class ExploringState:
+    name = "exploring"
+    def move(self, context: QuestContext) -> None:
+        context.transition(BossState(), LOCATIONS["boss"])
+    def attack(self, context: QuestContext, amount: int = 1) -> None:
+        pass
+
+
+class BossState:
+    name = "boss"
+    def move(self, context: QuestContext) -> None:
+        raise InvalidAction("already at the boss gate")
+    def attack(self, context: QuestContext, amount: int = 1) -> None:
+        if context.energy < amount:
+            raise InvalidAction("insufficient energy")
+        context.energy -= amount
+
+
+def state_named(name: str) -> QuestState:
+    states: dict[str, Callable[[], QuestState]] = {
+        "camp": CampState, "exploring": ExploringState, "boss": BossState}
+    try:
+        return states[name]()
+    except KeyError as error:
+        raise ValueError("unknown quest mode") from error
+
+
 class QuestContext:
-    """Track the current state, location, energy, and history"""
+    def __init__(self, state: QuestState | None = None, location: str | None = None,
+                 energy: int = 3, *, history_limit: int = 4) -> None:
+        self.state = state if state is not None else CampState()
+        self.location = LOCATIONS[self.state.name] if location is None else location
+        self.energy = energy
+        self._limit = integer(history_limit, "history_limit", 1)
+        if self._limit > 1000:
+            raise ValueError("history_limit exceeds 1000 entries")
+        self._history: list[HistoryEntry] = []
+        self._busy = False
+        self.snapshot()
 
-    state: QuestState
-    location: str = STARTING_LOCATION
-    energy: int = INITIAL_ENERGY
-    history: list[Command] = field(default_factory=list)
+    @property
+    def mode(self) -> str:
+        return self.state.name
+
+    @property
+    def history_limit(self) -> int:
+        return self._limit
+
+    @property
+    def history(self) -> tuple[HistoryEntry, ...]:
+        return tuple(self._history)
+
+    def snapshot(self) -> Snapshot:
+        return Snapshot(self.mode, self.location, self.energy)
 
     def transition(self, state: QuestState, location: str) -> None:
-        """Move the quest context into a new state and location"""
-        self.state = state
-        self.location = location
+        Snapshot(state.name, location, self.energy)
+        self.state, self.location = state, location
+
+    def _restore(self, value: Snapshot) -> None:
+        self.state, self.location, self.energy = (
+            state_named(value.mode), value.location, value.energy)
 
 
-# Represent the starting camp state
-class CampState:
-    """Handle quest actions while the player is at camp"""
-
-    name = CAMP_STATE_NAME
-
-    def move(self, context: QuestContext) -> None:
-        """Move from camp to the forest trail"""
-        context.transition(ExploringState(), FOREST_LOCATION)
-
-    def attack(self, context: QuestContext) -> None:
-        """Report that there is no camp enemy"""
-        print(NO_ENEMY_MESSAGE)
+@dataclass(frozen=True)
+class HistoryEntry:
+    action: Action
+    before: Snapshot
+    after: Snapshot
+    command: Command
 
 
-# Represent the exploration state before the boss
-class ExploringState:
-    """Handle quest actions while the player explores"""
+class Command:
+    def __init__(self, action: Action) -> None:
+        if not isinstance(action, Action):
+            raise TypeError("command requires an immutable Action")
+        self._action = action
+        self._status = "new"
+        self._owner: QuestContext | None = None
 
-    name = EXPLORING_STATE_NAME
+    @property
+    def action(self) -> Action:
+        return self._action
 
-    def move(self, context: QuestContext) -> None:
-        """Move from exploration to the boss gate"""
-        context.transition(BossState(), BOSS_LOCATION)
+    @property
+    def status(self) -> str:
+        return self._status
 
-    def attack(self, context: QuestContext) -> None:
-        """Report that the player should save energy"""
-        print(SAVE_ENERGY_MESSAGE)
+    def cancel(self) -> None:
+        if self.status != "new":
+            raise RuntimeError("only a new command can be cancelled")
+        self._status = "cancelled"
 
-
-# Represent the boss encounter state
-class BossState:
-    """Handle quest actions at the boss gate"""
-
-    name = BOSS_STATE_NAME
-
-    def move(self, context: QuestContext) -> None:
-        """Report that movement is not needed at the boss gate"""
-        print(BOSS_GATE_MESSAGE)
-
-    def attack(self, context: QuestContext) -> None:
-        """Spend energy when attacking the boss"""
-        # Spend energy only when the player still has energy available
-        if context.energy > MINIMUM_ATTACK_ENERGY:
-            context.energy -= ENERGY_STEP
-
-
-# Define the interface shared by undoable commands
-class Command(Protocol):
-    """Define command execution and undo behavior"""
-
-    name: str
+    def perform(self, context: QuestContext) -> None:
+        if self.action.name == "move":
+            context.state.move(context)
+        elif self.action.name == "attack":
+            context.state.attack(context, self.action.amount)
+        else:
+            context.energy += self.action.amount
 
     def execute(self, context: QuestContext) -> None:
-        """Apply this command to the quest context"""
-        ...
+        if self.status != "new" or context._busy:
+            raise RuntimeError("command is consumed or context is executing")
+        before = context.snapshot()
+        if context.history and before != context.history[-1].after:
+            raise RuntimeError("quest changed outside command history")
+        self._status, self._owner, context._busy = "running", context, True
+        try:
+            self.perform(context)
+            after = context.snapshot()
+        except BaseException:
+            context._restore(before)
+            self._status = "failed"
+            raise
+        else:
+            context._history.append(HistoryEntry(self.action, before, after, self))
+            del context._history[:-context.history_limit]
+            self._status = "done"
+        finally:
+            context._busy = False
 
     def undo(self, context: QuestContext) -> None:
-        """Reverse this command on the quest context"""
-        ...
+        if (context._busy or self.status != "done" or self._owner is not context
+                or not context._history or context._history[-1].command is not self):
+            raise RuntimeError("undo requires the latest retained command and its owner")
+        entry = context._history[-1]
+        if context.snapshot() != entry.after:
+            raise RuntimeError("quest changed outside command history")
+        context._restore(entry.before)
+        context._history.pop()
+        self._status = "undone"
 
 
-# Move the quest forward while remembering the prior state
-class MoveCommand:
-    """Move the player and support undoing the movement"""
-
-    name = MOVE_COMMAND_NAME
-
+class MoveCommand(Command):
+    name = "move"
     def __init__(self) -> None:
-        """Initialize empty previous-state storage"""
-        self.previous_state_name = ""
-        self.previous_location = ""
-
-    def execute(self, context: QuestContext) -> None:
-        """Run the move action for the current state"""
-        self.previous_state_name = context.state.name
-        self.previous_location = context.location
-        context.state.move(context)
-
-    def undo(self, context: QuestContext) -> None:
-        """Restore the state and location from before the move"""
-        states: dict[str, QuestState] = {
-            CAMP_STATE_NAME: CampState(),
-            EXPLORING_STATE_NAME: ExploringState(),
-            BOSS_STATE_NAME: BossState(),
-        }
-        context.transition(
-            states[self.previous_state_name], self.previous_location
-        )
+        super().__init__(Action(self.name))
 
 
-# Restore energy while supporting undo
-class RestCommand:
-    """Add energy and support undoing that rest"""
-
-    name = REST_COMMAND_NAME
-
-    def execute(self, context: QuestContext) -> None:
-        """Add one energy point"""
-        context.energy += ENERGY_STEP
-
-    def undo(self, context: QuestContext) -> None:
-        """Remove the energy point added by rest"""
-        context.energy -= ENERGY_STEP
+class RestCommand(Command):
+    name = "rest"
+    def __init__(self, amount: int = 1) -> None:
+        super().__init__(Action(self.name, amount))
 
 
-# Attack through the current state while supporting undo
-class AttackCommand:
-    """Attack in the current state and support undoing the attack"""
-
-    name = ATTACK_COMMAND_NAME
-
-    def execute(self, context: QuestContext) -> None:
-        """Run the attack action for the current state"""
-        context.state.attack(context)
-
-    def undo(self, context: QuestContext) -> None:
-        """Restore the energy spent by an attack"""
-        context.energy += ENERGY_STEP
-
-
-#################
-#   FUNCTIONS   #
-#################
+class AttackCommand(Command):
+    name = "attack"
+    def __init__(self, amount: int = 1) -> None:
+        super().__init__(Action(self.name, amount))
 
 
 def run_command(context: QuestContext, command: Command) -> None:
-    """Execute a command and remember it for undo"""
     command.execute(context)
-    context.history.append(command)
 
 
-def undo_last(context: QuestContext) -> None:
-    """Undo the most recent command in the history"""
-    command = context.history.pop()
-    command.undo(context)
+def undo_last(context: QuestContext) -> bool:
+    if context._busy:
+        raise RuntimeError("quest is executing")
+    if not context.history:
+        return False
+    context.history[-1].command.undo(context)
+    return True
+
+
+def move(context: QuestContext) -> None:
+    run_command(context, MoveCommand())
+
+
+def rest(context: QuestContext) -> None:
+    run_command(context, RestCommand())
+
+
+def attack(context: QuestContext) -> None:
+    run_command(context, AttackCommand())
+
+
+COMMANDS: dict[str, Callable[[QuestContext], None]] = {
+    "move": move, "rest": rest, "attack": attack}
+
+
+def export_actions(context: QuestContext) -> str:
+    if context._busy:
+        raise RuntimeError("quest is executing")
+    entries = context.history
+    initial = entries[0].before if entries else context.snapshot()
+    expected = entries[-1].after if entries else initial
+    if context.snapshot() != expected:
+        raise RuntimeError("quest changed outside command history")
+    if any(type(e.command).perform is not Command.perform for e in entries):
+        raise ValueError("recording supports built-in action behavior only")
+    text = json.dumps({"version": 1, "history_limit": context.history_limit,
+        "initial": {"mode": initial.mode, "location": initial.location,
+                    "energy": initial.energy},
+        "actions": [{"name": e.action.name, "amount": e.action.amount} for e in entries]},
+        sort_keys=True)
+    if replay_actions(text).snapshot() != context.snapshot():
+        raise ValueError("effects cannot be represented by the action recording")
+    return text
+
+
+def replay_actions(text: str) -> QuestContext:
+    if not isinstance(text, str):
+        raise TypeError("recording must be JSON text")
+    if len(text) > 65536:
+        raise ValueError("recording exceeds 65536 characters")
+    data = json.loads(text)
+    if not isinstance(data, dict) or set(data) != {"version", "history_limit", "initial", "actions"}:
+        raise ValueError("invalid recording envelope")
+    if type(data["version"]) is not int or data["version"] != 1:
+        raise ValueError("unsupported recording version")
+    raw = data["initial"]
+    if not isinstance(raw, dict) or set(raw) != {"mode", "location", "energy"}:
+        raise ValueError("invalid initial snapshot")
+    initial = Snapshot(**raw)
+    limit = integer(data["history_limit"], "history_limit", 1)
+    values = data["actions"]
+    if not isinstance(values, list) or len(values) > limit or len(values) > 1000:
+        raise ValueError("invalid bounded actions")
+    actions = []
+    for value in values:
+        if not isinstance(value, dict) or set(value) != {"name", "amount"}:
+            raise ValueError("invalid action record")
+        actions.append(Action(**value))
+    result = QuestContext(state_named(initial.mode), initial.location,
+                          initial.energy, history_limit=limit)
+    for action in actions:
+        run_command(result, Command(action))
+    return result
 
 
 def main() -> None:
-    """Run a sample state and command sequence"""
-    context = QuestContext(state=CampState())
-    run_command(context, MoveCommand())
-    run_command(context, MoveCommand())
-    run_command(context, AttackCommand())
-    run_command(context, RestCommand())
+    context = QuestContext()
+    for name in ["move", "move", "attack", "rest"]:
+        COMMANDS[name](context)
     undo_last(context)
-    print(context.location, context.state.name, context.energy)
+    print(context.location, context.mode, context.energy)
+    print("retained:", len(context.history))
+    print("replay equal:", replay_actions(export_actions(context)).snapshot() == context.snapshot())
 
 
 if __name__ == "__main__":

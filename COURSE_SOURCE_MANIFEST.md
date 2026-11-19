@@ -10,7 +10,7 @@ Canonical source repository: `Pythonic-Design-Patterns`
 
 - Run `./verify-course-source.sh` from this repository root before treating the source pack as ready.
 - The verification gate checks for this manifest, the source backlog ledger, source-like files, removed Replit metadata, and any repo-specific readiness files.
-- The sixteen named candidate families contain role-local contract tests. The repository gate verifies their reference behavior, completed learner fixtures and strict typing. Remaining source families still require their recorded course audit.
+- The twenty-two named candidate families contain role-local contract tests. The repository gate verifies their reference behavior, completed learner fixtures and strict typing. Remaining source families still require their recorded course audit.
 
 ## Active Catalog Targets
 
@@ -51,13 +51,17 @@ Canonical source repository: `Pythonic-Design-Patterns`
 ## Source Inventory
 
 - 31 active linked project folders remain addressable.
-- `tests/` holds maintainer checks for the sixteen named candidate families.
+- `tests/` holds maintainer checks for the twenty-two named candidate families.
 - `requirements-dev.txt` pins the checker and transitive tools; project runtime code uses the standard library.
 - Inactive source history remains in `_archived-unlinked/`.
 - The verifier reports current source-file counts as an inventory check.
 
 ## Current qualification scope
 
-The sixteen-family candidate covers PDP-01 through PDP-12, Strategy Rulebook, Factory/Builder Config Kit, Observer Notification Hub and Decorator/Proxy/Facade Toolkit. Each imported role has a complete brief, program, public contract suite and pinned development requirements. Twelve families have named learner holes and matching completed-scaffold checks. Four larger families retain working refactoring baselines and separate optional clients.
+The twenty-two-family candidate covers PDP-01 through PDP-16, Strategy Rulebook, Factory/Builder Config Kit, Observer Notification Hub, Decorator/Proxy/Facade Toolkit, State/Command Quest Loop and Adapter/Template Import Pipeline. Each imported role has a complete brief, program, public contract suite and pinned development requirements. Sixteen families have named learner holes and matching completed-scaffold checks. Six larger families retain working refactoring baselines and separate optional clients.
 
 The async contract tests run under standard Python 3.14 with the test runner owning the loop. Default imported demonstrations remain synchronous and run in the site IDE. Actual browser import, persistence and export acceptance is recorded separately by the site audit.
+
+## State/Command and Adapter/Integration candidate
+
+PDP-13 through PDP-16, State/Command Quest Loop and Adapter/Template Import Pipeline have role-local contracts and matching source briefs. Quest commands capture immutable actions, use bounded before/after history, reject inconsistent undo and replay the retained window in a fresh process. Both original adapter functions remain available; supported versions, input validation, default policies, vendor-error causes and functional/template boundaries are explicit. Four distinct practice packs cover captured callables, editor undo, timezone/unit/schema round trips and injected vendor failures. All six development pins remain unchanged. Source qualification and site teaching/IDE acceptance are separate.

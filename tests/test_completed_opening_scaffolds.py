@@ -10,6 +10,10 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = [
+    ('PDP-13-pdp7-state-and-command-supplemental-2', {'run_queue', 'make_increment'}),
+    ('PDP-14-pdp7-state-and-command-supplemental-3', {'undo_edit', 'apply_edit'}),
+    ('PDP-15-pdp8-adapter-and-integration-boundaries-supplemental-2', {'measurement_payload', 'parse_measurement'}),
+    ('PDP-16-pdp8-adapter-and-integration-boundaries-supplemental-3', {'highest_value', 'fetch_values'}),
     ('PDP-09-pdp5-observer-events-and-callbacks-supplemental-2', {'subscribe', 'publish_snapshot'}),
     ('PDP-10-pdp5-observer-events-and-callbacks-supplemental-3', {'deliver', 'close'}),
     ('PDP-11-pdp6-decorator-proxy-and-facade-supplemental-2', {'compose_layers', 'make_traced'}),

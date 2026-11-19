@@ -1,14 +1,5 @@
-# PDP7 State and Command supplemental 2
+# Captured Callable Queue
 
-Course: Pythonic Design Patterns
-Module: PDP7 State and Command supplemental 2
+Capture the amount from the configuration when creating each callable. Execute the captured queue in order using a local integer accumulator. Later configuration or queue-list changes must not alter already captured values or membership. Validate the full queue before calling it; preserve the first callback exception. Callbacks may have external effects, which this local accumulator cannot reverse.
 
-Use the starter folder first. The starter is intentionally incomplete, and the solution shows one clean way to finish the same build after the student has worked through it.
-
-Suggested flow:
-- Read the module brief and identify the core requirement.
-- Complete the TODO markers in the starter implementation.
-- Test at least one custom case beyond the default example.
-- Compare against the solution only after the student has a working draft.
-
-Quick run hint: `python3 main.py`
+Start in `starter/`; compare the complete reference in `solution/` after producing an independent attempt. Each imported role contains the runnable driver, contract tests and its brief.

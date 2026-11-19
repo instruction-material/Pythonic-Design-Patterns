@@ -1,7 +1,13 @@
-# PDP5 State Command Quest Loop
+# State and Command Quest Loop
 
-Goal: combine explicit states with packaged actions in a small quest-style loop.
+Refactor mode dispatch from branch_move/branch_attack into CampState, ExploringState and BossState while preserving the public contracts and exact default output. The starter is a complete working baseline. Preserve QuestContext, Snapshot, immutable Action, Command and its Move/Rest/Attack variants, run_command, undo_last, legacy move/rest/attack/COMMANDS, export_actions and replay_actions.
 
-Students should separate mode-dependent behavior from action history so the code
-can support replay or undo without falling back into one large control-flow
-blob.
+QuestContext starts at camp with energy 3 and retains four history entries by default; history_limit is 1..1000. Move advances camp -> exploring -> boss; moving at boss raises InvalidAction. Attack outside boss is a recorded no-op. Boss attack consumes amount energy, and insufficient energy fails without a history entry. Rest adds its positive amount in every state. Numeric amounts exclude bool. State and location remain separate snapshot fields.
+
+Command.action is immutable. A command is one-shot: success, failure, cancellation or undo consumes it; retry uses a fresh command. cancel() applies to a new command before execution. execute() snapshots local quest data, rejects reentrancy and restores local data on failure before propagating the same exception. Only successful actions enter history, including successful no-ops. Custom perform() implementations may change local quest data, but external effects cannot be rolled back. Custom command behavior cannot be exported as a built-in action recording.
+
+Undo restores the exact before snapshot of the newest retained command and returns True. Empty undo returns False. Evicted, foreign, repeated or out-of-order undo is rejected. Editing quest data outside the recorded action stream causes undo, export and further execution to reject an inconsistent history. The history view is an immutable tuple.
+
+Export is version-1 JSON containing the earliest retained before snapshot, history_limit and retained action name/amount pairs. This allows replay after old entries have been evicted. A fresh process replays built-in local quest actions with fresh command objects, without the original object identities. It reconstructs the retained window rather than an unlimited lifetime log. Invalid envelope keys, modes, versions, actions and unavailable transitions fail. Recordings are limited to 65536 characters and at most 1000 actions. Files, payments, network requests and custom side effects are outside this replay contract.
+
+Use the complete baseline in starter/ for the required refactor. The separate optional comparison client is in solution/README.md; both imported roles contain complete public contracts and matching development pins.

@@ -1,42 +1,45 @@
-#################
-#   CONSTANTS   #
-#################
-
-SAMPLE_TEXT = "design patterns"
+"""Vendor failures and mutable payloads stop at one injected boundary."""
+from collections.abc import Callable, Mapping
 
 
-#############
-#   TYPES   #
-#############
+class SourceError(RuntimeError):
+    pass
 
 
-# Define the formatting strategy interface
-class Formatter:
-    """Define the formatter interface"""
-
-    def format(self, text: str) -> str:
-        """Format the provided text"""
-        raise NotImplementedError
-
-
-# Format text by capitalizing the first letter of each word
-class TitleFormatter(Formatter):
-    """Format text in title case"""
-
-    def format(self, text: str) -> str:
-        """Convert text to title case"""
-        return text.title()
+def fetch_values(fetch: Callable[[], Mapping[str, object]]) -> tuple[int, ...]:
+    try:
+        payload = fetch()
+    except OSError as error:
+        raise SourceError("vendor reader failed") from error
+    if not isinstance(payload, Mapping):
+        raise TypeError("vendor payload must be a mapping")
+    values = payload.get("values", [])
+    if not isinstance(values, list):
+        raise TypeError("values must be a list")
+    if any(not isinstance(v, int) or isinstance(v, bool) for v in values):
+        raise TypeError("every value must be an integer")
+    return tuple(values)
 
 
-#################
-#   FUNCTIONS   #
-#################
+def highest_value(fetch: Callable[[], Mapping[str, object]]) -> int:
+    values = fetch_values(fetch)
+    if not values:
+        raise ValueError("no values returned")
+    return max(values)
 
 
 def main() -> None:
-    """Print a title-formatted sample phrase"""
-    print(TitleFormatter().format(SAMPLE_TEXT))
+    print("highest:", highest_value(lambda: {"values": [4, 9, 3]}))
+    def failed_reader() -> Mapping[str, object]:
+        raise TimeoutError("local simulated timeout")
+    try:
+        fetch_values(failed_reader)
+    except SourceError as error:
+        print("source failure:", type(error.__cause__).__name__)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except NotImplementedError as error:
+        print("starter unfinished:", error)
